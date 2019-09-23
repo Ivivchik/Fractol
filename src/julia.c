@@ -1,30 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mandelbrot.c                                       :+:      :+:    :+:   */
+/*   julia.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkuhic <hkuhic@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/09/17 19:43:36 by hkuhic            #+#    #+#             */
-/*   Updated: 2019/09/23 19:24:05 by hkuhic           ###   ########.fr       */
+/*   Created: 2019/09/23 19:17:48 by hkuhic            #+#    #+#             */
+/*   Updated: 2019/09/23 20:35:03 by hkuhic           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-void	mandelbrot_init(t_fractol *fr)
+void	julia_init(t_fractol *fr)
 {
 	fr->max_iteration = 50;
 	fr->zoom = 100;
-	fr->x1 = -2.05;
+	fr->x1 = -2.03;
 	fr->y1 = -1.3;
 	fr->color = 255;
+	fr->c = complex(0.13, 0.25);
 }
 
-void	calculate_coor_for_mandelbrot(t_fractol *fr)
+void	calculate_coor_for_julia(t_fractol *fr)
 {
-	fr->c = complex(fr->x / fr->zoom + fr->x1, fr->y / fr->zoom + fr->y1);
-	fr->z = complex(0, 0);
+	fr->z = complex(fr->x / fr->zoom + fr->x1, fr->y / fr->zoom + fr->y1);
 	fr->interation = 0;
 	while (pow(fr->z.re, 2) + pow(fr->z.im, 2) <= 4 &&
 		fr->interation < fr->max_iteration)
@@ -44,7 +44,7 @@ void	calculate_coor_for_mandelbrot(t_fractol *fr)
 		put_pixcel(fr, fr->x, fr->y, fr->interation * (fr->color_fr + 111000000));
 }
 
-void	*mandelbrot(void *tmp)
+void	*julia(void *tmp)
 {
 	t_fractol	*fr;
 	int			tab;
@@ -57,7 +57,7 @@ void	*mandelbrot(void *tmp)
 		fr->y = tab;
 		while (fr->y < fr->y_max)
 		{
-			calculate_coor_for_mandelbrot(fr);
+			calculate_coor_for_julia(fr);
 			fr->y++;
 		}
 		fr->x++;
@@ -67,7 +67,7 @@ void	*mandelbrot(void *tmp)
 	return (tmp);
 }
 
-void	mandelbrot_pthread(t_fractol *fr)
+void	julia_pthread(t_fractol *fr)
 {
 	t_fractol	tab[150];
 	pthread_t	t[150];
@@ -79,7 +79,7 @@ void	mandelbrot_pthread(t_fractol *fr)
 		ft_memcpy((void*)&tab[i], (void*)fr, sizeof(t_fractol));
 		tab[i].y = 10 * i;
 		tab[i].y_max = 10 * (i + 1);
-		pthread_create(&t[i], NULL, mandelbrot, &tab[i]);
+		pthread_create(&t[i], NULL, julia, &tab[i]);
 		i++;
 	}
 	while (i--)

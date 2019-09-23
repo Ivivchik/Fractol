@@ -6,7 +6,7 @@
 /*   By: hkuhic <hkuhic@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/23 16:17:41 by hkuhic            #+#    #+#             */
-/*   Updated: 2019/09/23 18:08:30 by hkuhic           ###   ########.fr       */
+/*   Updated: 2019/09/23 19:22:35 by hkuhic           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,16 @@ void		fract_calc(t_fractol *fr)
 		fr->max_iteration = 0;
 	if (fr->fract == 0)
 		mandelbrot_pthread(fr);
+	if (fr->fract == 1)
+		julia_pthread(fr);
 }
 
 void		fract_init(t_fractol *fr)
 {
 	if (fr->fract == 0)
 		mandelbrot_init(fr);
+	if (fr->fract == 1)
+		julia_init(fr);
 	fract_calc(fr);
 }
 
@@ -48,5 +52,7 @@ int			fract_comp(char **av, t_fractol *fr)
 {
 	if (ft_strcmp(av[1], "mandelbrot") == 0)
 		fr->fract = 0;
+	if (ft_strcmp(av[1], "julia") == 0)
+		fr->fract = 1;
 	return (1);
 }

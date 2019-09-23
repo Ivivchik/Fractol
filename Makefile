@@ -6,7 +6,7 @@
 #    By: hkuhic <hkuhic@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/02/21 15:56:04 by jaleman           #+#    #+#              #
-#    Updated: 2019/09/23 17:46:57 by hkuhic           ###   ########.fr        #
+#    Updated: 2019/09/23 19:21:30 by hkuhic           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,7 @@ INC_DIR = ./includes/
 LIBFT_DIR = ./libft/
 MINLBX_DIR = ./minilibx/
 
-SRC_FILES = main.c hook.c mandelbrot.c init.c
+SRC_FILES = main.c hook.c mandelbrot.c init.c julia.c
 OBJ_FILES = $(SRC_FILES:.c=.o)
 
 SRC = $(addprefix $(SRC_DIR), $(SRC_FILES))

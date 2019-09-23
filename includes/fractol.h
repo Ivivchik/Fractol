@@ -6,7 +6,7 @@
 /*   By: hkuhic <hkuhic@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/17 19:21:27 by hkuhic            #+#    #+#             */
-/*   Updated: 2019/09/23 16:47:10 by hkuhic           ###   ########.fr       */
+/*   Updated: 2019/09/23 19:56:49 by hkuhic           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ typedef	struct	s_fractol
 	int			size;
 	int			y_max;
 	int			fract;
+	int			color_fr;
 	double		x1;
 	double		y1;
 	double		zoom;
@@ -70,5 +71,11 @@ int				fract_comp(char **av, t_fractol *fr);
 void			fract_init(t_fractol *fr);
 void			fract_calc(t_fractol *fr);
 void			mandelbrot_pthread(t_fractol *fr);
+void			julia_pthread(t_fractol *fr);
+void			*julia(void *tmp);
+void			calculate_coor_for_julia(t_fractol *fr);
+void			julia_init(t_fractol *fr);
+int				mouse_for_julia(int x, int y, t_fractol *fr);
+
 
 #endif
