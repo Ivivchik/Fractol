@@ -6,26 +6,64 @@
 /*   By: hkuhic <hkuhic@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/17 19:18:51 by hkuhic            #+#    #+#             */
-/*   Updated: 2019/09/23 20:12:52 by hkuhic           ###   ########.fr       */
+/*   Updated: 2019/09/27 21:15:34 by hkuhic           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-void	put_pixcel(t_fractol *fr, int x, int y, int color)
+void	mlx_win_init(t_fractol *fr)
 {
-	if (fr->x < WIDTH && fr->y < HEIHGT)
-	{
-		color = mlx_get_color_value(fr->mlx, color);
-		ft_memcpy(fr->imag + 4 * WIDTH * y + x * 4,
-			&color, sizeof(int));
-	}
+	fr->mlx = mlx_init();
+	fr->win = mlx_new_window(fr->mlx, WIDTH, HEIHGT, "Fractol");
+	fr->img = mlx_new_image(fr->mlx, WIDTH, HEIHGT);
+	fr->imag = mlx_get_data_addr(fr->img, &fr->bpp, &fr->size, &fr->endian);
 }
 
-int		ft_close(void)
+int		fract_comp(char **av, t_fractol *fr)
 {
-	exit(1);
-	return (0);
+	if (ft_strcmp(av[1], "mandelbrot") == 0)
+		fr->fract = 1;
+	else if (ft_strcmp(av[1], "julia") == 0)
+		fr->fract = 2;
+	else if (ft_strcmp(av[1], "burningship") == 0)
+		fr->fract = 3;
+	else if (ft_strcmp(av[1], "myfractol") == 0)
+		fr->fract = 4;
+	else if (ft_strcmp(av[1], "mandelbar") == 0)
+		fr->fract = 5;
+	else
+		fr->fract = -1;
+	return (1);
+}
+
+void	fract_init(t_fractol *fr)
+{
+	if (fr->fract == 1)
+		mandelbrot_init(fr);
+	else if (fr->fract == 2)
+		init_julia(fr);
+	else if (fr->fract == 3)
+		burnindship_init(fr);
+	else if (fr->fract == 4)
+		myfractol_init(fr);
+	else if (fr->fract == 5)
+		mandelbar_init(fr);
+	fract_calc(fr);
+}
+
+void	fract_calc(t_fractol *fr)
+{
+	if (fr->fract == 1)
+		mandelbrot(fr);
+	else if (fr->fract == 2)
+		julia(fr);
+	else if (fr->fract == 3)
+		burningship(fr);
+	else if (fr->fract == 4)
+		myfractol(fr);
+	else if (fr->fract == 5)
+		mandelbar(fr);
 }
 
 int		main(int ac, char **av)
@@ -38,13 +76,17 @@ int		main(int ac, char **av)
 	if (ac == 2)
 	{
 		mlx_win_init(fr);
-		if ((fract_comp(av, fr)) == 0)
-			return (0);
+		fract_comp(av, fr);
 		fract_init(fr);
-		if (fr->fract == 1)
+		fract_calc(fr);
+		if (fr->fract == -1)
+		{
+			ft_putstr("Ups, I don't this fractol\n");
+			exit(1);
+		}
+		if (fr->fract == 2)
 			mlx_hook(fr->win, 6, 1L << 6, mouse_for_julia, fr);
-		mlx_hook(fr->win, 17, 0L, ft_close, fr);
-		mlx_key_hook(fr->win, key_hook, fr);
+		mlx_hook(fr->win, 2, 3, key_hook, fr);
 		mlx_mouse_hook(fr->win, mouse_hook, fr);
 		mlx_loop(fr->mlx);
 	}

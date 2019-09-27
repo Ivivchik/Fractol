@@ -5,84 +5,57 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkuhic <hkuhic@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/09/23 19:17:48 by hkuhic            #+#    #+#             */
-/*   Updated: 2019/09/23 20:35:03 by hkuhic           ###   ########.fr       */
+/*   Created: 2017/06/05 11:09:29 by bzmuda            #+#    #+#             */
+/*   Updated: 2019/09/27 20:46:49 by hkuhic           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-void	julia_init(t_fractol *fr)
+void	init_julia(t_fractol *fr)
 {
-	fr->max_iteration = 50;
-	fr->zoom = 100;
-	fr->x1 = -2.03;
-	fr->y1 = -1.3;
-	fr->color = 255;
-	fr->c = complex(0.13, 0.25);
+	fr->x = 0;
+	fr->y = 0;
+	fr->interation = 0;
+	fr->x1 = -4;
+	fr->y1 = -2.5;
+	fr->max_iteration = 100;
+	fr->zoom = 200;
+	fr->c = complex(-0.5, -0.5);
 }
 
-void	calculate_coor_for_julia(t_fractol *fr)
+void	exten_julia(t_fractol *fr)
 {
-	fr->z = complex(fr->x / fr->zoom + fr->x1, fr->y / fr->zoom + fr->y1);
-	fr->interation = 0;
-	while (pow(fr->z.re, 2) + pow(fr->z.im, 2) <= 4 &&
-		fr->interation < fr->max_iteration)
+	while (fr->z.re * fr->z.re + fr->z.im * fr->z.im <= 4
+		&& fr->interation < fr->max_iteration)
 	{
-		fr->z = complex(pow(fr->z.re, 2) - pow(fr->z.im, 2) + fr->c.re,
-		2 * fr->z.re * fr->z.im + fr->c.im);
+		fr->z = complex(fr->z.re * fr->z.re - fr->z.im * fr->z.im + fr->c.re,
+		2 * fr->z.im * fr->z.re + fr->c.im);
 		fr->interation++;
 	}
 	if (fr->interation == fr->max_iteration)
 		put_pixcel(fr, fr->x, fr->y, 0);
-	else if (fr->interation < fr->max_iteration / 4)
-		put_pixcel(fr, fr->x, fr->y, fr->interation * fr->color_fr);
-	else if (fr->interation < fr->max_iteration / 2 &&
-			fr->interation > fr->max_iteration / 4)
-		put_pixcel(fr, fr->x, fr->y, fr->interation * (fr->color_fr + 1110000));
 	else
-		put_pixcel(fr, fr->x, fr->y, fr->interation * (fr->color_fr + 111000000));
+		put_pixcel(fr, fr->x, fr->y, fr->interation * fr->color_fr);
+	fr->interation = 50;
 }
 
-void	*julia(void *tmp)
+void	julia(t_fractol *fr)
 {
-	t_fractol	*fr;
-	int			tab;
-
-	fr = (t_fractol *)tmp;
-	fr->x = 0;
-	tab = fr->y;
-	while (fr->x < WIDTH)
+	while (fr->y < HEIHGT)
 	{
-		fr->y = tab;
-		while (fr->y < fr->y_max)
+		fr->x = 0;
+		while (fr->x < WIDTH)
 		{
-			calculate_coor_for_julia(fr);
-			fr->y++;
+			fr->c = complex(fr->c.re, fr->c.im);
+			fr->z = complex(fr->x / fr->zoom + fr->x1,
+			fr->y / fr->zoom + fr->y1);
+			exten_julia(fr);
+			fr->x++;
 		}
-		fr->x++;
+		fr->y++;
 	}
-	fr->y = 0;
 	fr->x = 0;
-	return (tmp);
-}
-
-void	julia_pthread(t_fractol *fr)
-{
-	t_fractol	tab[150];
-	pthread_t	t[150];
-	int			i;
-
-	i = 0;
-	while (i < 150)
-	{
-		ft_memcpy((void*)&tab[i], (void*)fr, sizeof(t_fractol));
-		tab[i].y = 10 * i;
-		tab[i].y_max = 10 * (i + 1);
-		pthread_create(&t[i], NULL, julia, &tab[i]);
-		i++;
-	}
-	while (i--)
-		pthread_join(t[i], NULL);
+	fr->y = 0;
 	mlx_put_image_to_window(fr->mlx, fr->win, fr->img, 0, 0);
 }
